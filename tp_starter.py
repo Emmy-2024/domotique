@@ -106,21 +106,20 @@ def normalize_zigbee(parsed: dict) -> list[dict]:
     """Voir énoncé Partie 3, Exercices 3.1 à 3.4."""
     payload = parsed["payload"]
     list_event = []
-    print(type(parsed["payload"]))
+    #print(type(parsed["payload"]))
     
     for k in parsed["payload"] : 
         
         event = {" device_id " : parsed["device"] ,
             " protocol " : " zigbee ",
-            " metric_name " : k if k in ZIGBEE_KNOWN_FIELDS else "unknow_"+k,
+            " metric_name " : k if k in ZIGBEE_KNOWN_FIELDS or k in SAFETY_CRITICAL_FIELDS else "unknow_"+k,
             " metric_value " : parsed["payload"][k],
             " safety_critical " : k in SAFETY_CRITICAL_FIELDS,
             " raw " :parsed,
         }
+        
         list_event.append(event)
-    print("************************************debut*********************************")
-    print(list_event)
-    print("************************************fin*********************************")
+    print(event)
     return list_event
 
 def normalize_zwave(parsed: dict) -> list[dict]:
@@ -143,12 +142,15 @@ def normalize_ha(parsed: dict) -> list[dict]:
         event = {
             " device_id " : parsed["entity_id"] ,
             " protocol " : " ha ",
-            " metric_name " : k if k in ZIGBEE_KNOWN_FIELDS else "unknow_"+k,
+            " metric_name " : k if k in ZIGBEE_KNOWN_FIELDS or k in SAFETY_CRITICAL_FIELDS else "unknow_"+k,
             " metric_value " : parsed[k],
             " safety_critical " : k in SAFETY_CRITICAL_FIELDS ,
             " raw " :parsed,
         }
         list_event.append(event)
+    print("***********************************************")
+    print(event)
+    print("***********************************************")
     return list_event
 
 # ============================================================
@@ -189,9 +191,7 @@ def streaming_parse_ha(path: str):
             if depth == 0:
                 yield json.loads(buf)
                 buf = ""
-for obj in streaming_parse_ha( "ha_large_sample.txt" ):
-    pass
-    #print(obj)
+
 """""
 tracemalloc.start ()
 for obj in streaming_parse_ha ( " data / ha_large_sample . txt " ):
@@ -235,22 +235,23 @@ def deadband_filter(events: list[dict], delta: float) -> list[dict]:
 events = []
 with open ( 'zwave_large_sample.log' ) as f :
     for l in f :
-        print("ok")
+       # print("ok")
         p = parse_zwave_line (l)
-        print(p)
+       # print(p)
         if p: 
-            print("events")
-            print(events)
+          
             events += normalize_zwave(p)
 
 deltas = [0.5, 1.0, 2.0, 5.0]
 
 total = len(events)
 
+"""""
 print(f"Total : {total} événements")
 print()
 print("delta | Événements restants | % filtré")
 print("---------------------------------------")
+"""
 
 for delta in deltas:
     filtered = deadband_filter(events, delta)
@@ -283,14 +284,13 @@ def detect_power_surge(events: list[dict], threshold_w: float = 2000) -> list[di
 events = []
 with open ( 'attack_sample.log' ) as f :
     for l in f :
-        print("ok")
+       # print("ok")
         p = parse_zigbee_line (l)
-        print(p)
+       # print(p)
         if p: 
-            print("events")
-            print(events)
+            
             events += normalize_zigbee(p)
-print("nombre d'alerte",len(detect_power_surge(events)))
+print("nombre d'alerte = ",len(detect_power_surge(events)),"\n")
 print(detect_power_surge(events))
 
 def detect_replay(events: list[dict], window: int = 3) -> list[dict]:
