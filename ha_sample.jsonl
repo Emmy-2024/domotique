@@ -1,0 +1,14 @@
+{"entity_id": "sensor.printer_blv_voltage", "state": "207", "unit": "V", "friendly_name": "Printer BLV Tension", "last_updated": "2026-03-29T10:24:18.152030+00:00"}
+{"entity_id": "binary_sensor.chambre_jade_presence_sensor_radar_moving_target", "state": "off", "unit": null, "friendly_name": "Chambre Jade - Presence Sensor Radar Moving Target", "last_updated": "2026-03-29T10:24:20.268672+00:00"}
+{"entity_id": "sensor.salon_haut_presence_sensor_illuminance_lux", "state": "69", "unit": "lx", "friendly_name": "salon_haut_presence_sensor Éclairement", "last_updated": "2026-03-29T10:24:20.760304+00:00"}
+{"entity_id": "sensor.cuisine_presence_sensor_bh1750_illuminance", "state": "28.2972431182861", "unit": "lx", "friendly_name": "Cuisine - Presence Sensor BH1750 Illuminance", "last_updated": "2026-03-29T10:24:23.334814+00:00"}
+{"entity_id": "sensor.chambre_mael_presence_sensor_uptime", "state": "594430.9375", "unit": "s", "friendly_name": "Chambre Mael - Presence Sensor ESP32 Presence Sensor 5 Uptime", "last_updated": "2026-03-29T10:24:23.709013+00:00"}
+{"entity_id": "sensor.cuisine_presence_sensor_uptime", "state": "608594.25", "unit": "s", "friendly_name": "Cuisine - Presence Sensor ESP32 Presence Sensor 1 Uptime", "last_updated": "2026-03-29T10:24:24.362741+00:00"}
+{"entity_id": "sensor.printer_vking_voltage", "state": "205", "unit": "V", "friendly_name": "Printer VKING Tension", "last_updated": "2026-03-29T10:24:26.828939+00:00"}
+{"entity_id": "sensor.switch_couloir_haut_mur_voltage", "state": "207", "unit": "V", "friendly_name": "Switch - Couloir Haut mur Tension", "last_updated": "2026-03-29T10:24:32.244139+00:00"}
+{"entity_id": "sensor.switch_tv_freebox_voltage", "state": "195", "unit": "V", "friendly_name": "Switch TV/Freebox Tension", "last_updated": "2026-03-29T10:24:33.859926+00:00"}
+{"entity_id": "sensor.switch_onduleur_garage_voltage", "state": "209", "unit": "V", "friendly_name": "Switch Onduleur Garage Tension", "last_updated": "2026-03-29T10:24:35.172855+00:00"}
+{"entity_id": "sensor.switch_3dprinter_power", "state": "17.2", "unit": "W", "friendly_name": "Switch 3Dprinter Power", "last_updated": "2026-03-29T10:24:39.235104+00:00"}
+{"entity_id": "sensor.switch_garage_entree_power", "state": "59", "unit": "W", "friendly_name": "Switch Garage Entrée Puissance", "last_updated": "2026-03-29T10:24:41.646923+00:00"}
+{"entity_id": "sensor.switch_3dprinter_power", "state": "8.9", "unit": "W", "friendly_name": "Switch 3Dprinter Power", "last_updated": "2026-03-29T10:24:43.016117+00:00"}
+{"entity_id": "sensor.lumiere_garage_power", "state": "100.00", "unit": "W", "friendly_name": "Lumière - Garage power", "last_updated": "2026-03-29T10:24:46.600890+00:00"}

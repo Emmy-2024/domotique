@@ -1,0 +1,24 @@
+1)zigbee_prise_5
+zigbee-switch-inwall-4
+zigbee-alarm-1
+zigbee-pir-1
+
+2)La derniere puissance pour le node 003 est 30.7. Pour le node 003, il a été annoncé 8 valeur en quelques milisecondes
+
+3) L'appareil avec la consommation la plus élevée en Watts est la lumière du garage avec 100 W
+
+4) Si zigbee dans le nom du fichier alors 
+conso = entity[power]
+Sinon si ha dans le nom du fichier
+alors conso = entity[state]
+sinon si zwave est dans fichier 
+alors conso  = entier entre "power" et ">="
+si conso >= 200
+renvoyer une alerte
+
+
+Exercice 4.1
+
+L'erreur apparait apres le premier objet car un le fichier est une concaténation de plusieurs JSON donc il ne lit que le premier objet 
+
+Non le générateur ne retournerai pas l'objet tronqué il serait ignoré
