@@ -17,6 +17,8 @@ import tracemalloc
 
 import os
 
+from collections import Counter, deque
+
 # ============================================================
 # PARTIE 2 — PARSERS PROTOCOLAIRES
 # ============================================================
@@ -109,7 +111,7 @@ def normalize_zigbee(parsed: dict) -> list[dict]:
     #print(type(parsed["payload"]))
     
     for k in parsed["payload"] : 
-        
+        print(k if k in ZIGBEE_KNOWN_FIELDS or k in SAFETY_CRITICAL_FIELDS else "unknow_"+k)
         event = {" device_id " : parsed["device"] ,
             " protocol " : " zigbee ",
             " metric_name " : k if k in ZIGBEE_KNOWN_FIELDS or k in SAFETY_CRITICAL_FIELDS else "unknow_"+k,
@@ -119,7 +121,7 @@ def normalize_zigbee(parsed: dict) -> list[dict]:
         }
         
         list_event.append(event)
-    print(event)
+   # print(event)
     return list_event
 
 def normalize_zwave(parsed: dict) -> list[dict]:
@@ -273,6 +275,7 @@ def detect_power_surge(events: list[dict], threshold_w: float = 2000) -> list[di
 
     for event in events:
         metric_name = event[" metric_name "]
+        print(metric_name)
         metric_value = event[" metric_value "]
 
         if metric_name == "power" and metric_value is not None:
@@ -290,23 +293,64 @@ with open ( 'attack_sample.log' ) as f :
         if p: 
             
             events += normalize_zigbee(p)
-print("nombre d'alerte = ",len(detect_power_surge(events)),"\n")
-print(detect_power_surge(events))
+#print("nombre d'alerte = ",len(detect_power_surge(events)),"\n")
+#print(detect_power_surge(events))
 
 def detect_replay(events: list[dict], window: int = 3) -> list[dict]:
     """Voir énoncé Partie 6, Exercice 6.2."""
-    # TODO
-    raise NotImplementedError
+    """
+    Alerte si une même (device_id, metric_name) produit `window` valeurs
+    consécutives identiques. Une seule alerte par rafale.
+    Les événements dont metric_value est None sont ignorés.
+    """
+    alerts = []
+  
+    state = {}
+
+    for index, event in enumerate(events):
+        value = event[" metric_value "]
+        if value is None:
+            continue  
+
+        key = (event[" device_id "], event[" metric_name "])
+        last = state.get(key)
+
+        if last is not None and last[0] == value:
+            last[1] += 1
+        else:
+            state[key] = [value, 1]  # nouvelle série
+            last = state[key]
+
+        # Alerte exactement au moment où la série atteint `window`
+        if last[1] == window:
+            alerts.append({
+                "type": "replay",
+                "device_id": key[0],
+                "metric_name": key[1],
+                "metric_value": value,
+                "event_index": index,
+                "window": window,
+            })
+        
+   
+    return alerts
 
 
 def detect_rogue_device(events: list[dict], known_devices: set[str]) -> list[dict]:
     """Voir énoncé Partie 6, Exercice 6.3."""
-    # TODO
-    raise NotImplementedError
+    for dico in events:
+        if not dico[" device_id "] in known_devices:
+            print("!!! alerte: device unknown !!!\n")
+            #print(dico)
+    return events
 
+known_devices = {"zigbee_prise_5","zigbee-alarm-1"}
+#print("nombre d'alerte = ",len(detect_rogue_device(events,known_devices)),"\n")
+print(detect_rogue_device(events,known_devices))
 
 def detect_event_storm(events: list[dict], window_events: int = 20,
-                        max_per_device: int = 8) -> list[dict]:
+                        max_per_device: int = 2) -> list[dict]:
+
     """
     NOUVEAU (Partie 6, Exercice 6.4).
     Alerte si un même device_id produit plus de `max_per_device`
@@ -317,8 +361,53 @@ def detect_event_storm(events: list[dict], window_events: int = 20,
     fenêtre glissante (collections.deque de taille max window_events),
     comptez les occurrences par device_id à chaque pas.
     """
-    # TODO
-    raise NotImplementedError
+    
+    message_device_ids = [e["device"] for e in events]
+    alerts = []
+    window = deque()      
+    counts = Counter()   
+
+    for index, device_id in enumerate(message_device_ids):
+        # 1. Faire sortir le plus ancien si la fenêtre est pleine
+        if len(window) == window_events:
+            oldest = window.popleft()
+            counts[oldest] -= 1
+            if counts[oldest] == 0:
+                del counts[oldest]
+
+        window.append(device_id)
+        counts[device_id] += 1
+
+        if counts[device_id] == max_per_device + 1:
+            alerts.append({
+                "type": "event_storm",
+                "device_id": device_id,
+                "message_index": index,
+                "count": counts[device_id],
+                "window_size": window_events,
+            })
+
+    return alerts
+
+
+
+###############  TEST PARTIE 6 ########################
+print("*******************************\n")
+print("*******************************\n")
+print("*******************************\n")
+events = []
+with open ( 'attack_sample.log' ) as f :
+    for l in f :
+       # print("ok")
+        p= parse_zigbee_line(l)
+       
+       # print(p)
+        if p: 
+            events += normalize_zigbee(p)
+
+replay = detect_replay(events)
+print("replay=",replay)
+print("taille=",len(replay))
 
 
 # ============================================================
